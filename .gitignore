@@ -1,0 +1,22 @@
+# Go build artifacts
+bin/
+build/
+dist/
+*.exe
+*.exe~
+*.test
+*.out
+
+# Coverage files
+coverage.out
+coverage.html
+.coverprofile
+
+# Workspace files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
