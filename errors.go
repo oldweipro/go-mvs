@@ -1,6 +1,4 @@
-//go:build windows && amd64
-
-package mvsdk
+package mvs
 
 import (
 	"errors"
@@ -8,10 +6,16 @@ import (
 )
 
 var (
-	ErrSDKNotInitialized  = errors.New("mvsdk: SDK is not initialized")
-	ErrCameraClosed       = errors.New("mvsdk: camera is closed")
-	ErrCameraNotGrabbing  = errors.New("mvsdk: camera is not grabbing")
-	ErrNilFrameBuffer     = errors.New("mvsdk: frame buffer pointer is nil")
+	ErrSDKNotInitialized       = errors.New("mvs: SDK is not initialized")
+	ErrCameraClosed            = errors.New("mvs: camera is closed")
+	ErrCameraNotGrabbing       = errors.New("mvs: camera is not grabbing")
+	ErrNilFrameBuffer          = errors.New("mvs: frame buffer pointer is nil")
+	ErrDeviceNotFound          = errors.New("mvs: device not found")
+	ErrInvalidFrameData        = errors.New("mvs: invalid frame data")
+	ErrUnsupportedPixel        = errors.New("mvs: unsupported pixel type")
+	ErrInvalidArgument         = errors.New("mvs: invalid argument")
+	ErrCallbackRegistered      = errors.New("mvs: frame callback is already registered")
+	ErrAcquisitionModeConflict = errors.New("mvs: acquisition mode conflict")
 )
 
 type SDKError struct {

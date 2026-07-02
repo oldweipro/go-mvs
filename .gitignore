@@ -20,3 +20,9 @@ coverage.html
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Captured image artifacts
+*.raw
+*.bmp
+*.jpg
+*.png

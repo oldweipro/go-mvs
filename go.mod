@@ -1,3 +1,3 @@
-module github.com/oldweipro/mvs-go-sdk
+module github.com/oldweipro/go-mvs
 
 go 1.20

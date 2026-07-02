@@ -1,6 +1,8 @@
 //go:build windows && amd64
 
-package mvsdk
+package mvs
+
+import "fmt"
 
 func New(config Config) (*SDK, error) {
 	driver, err := newDriver(config.DLLPath)
@@ -89,6 +91,13 @@ func (s *SDK) EnumerateDefaultDevices() ([]DeviceInfo, error) {
 	return s.EnumerateDevices(DefaultDeviceTransportLayer)
 }
 
+func (s *SDK) IsDeviceAccessible(info DeviceInfo, accessMode uint32) bool {
+	if accessMode == 0 {
+		accessMode = AccessExclusive
+	}
+	return s.driver.isDeviceAccessible(&info.raw, accessMode)
+}
+
 func (s *SDK) OpenDevice(info DeviceInfo, accessMode uint32) (*Camera, error) {
 	s.mu.Lock()
 	initialized := s.initialized
@@ -117,4 +126,68 @@ func (s *SDK) OpenDevice(info DeviceInfo, accessMode uint32) (*Camera, error) {
 		info:   info,
 		open:   true,
 	}, nil
+}
+
+func (s *SDK) FindDeviceBySerial(serial string) (DeviceInfo, bool, error) {
+	return s.findDefaultDevice(func(device DeviceInfo) bool {
+		return serial != "" && device.SerialNumber == serial
+	})
+}
+
+func (s *SDK) FindDeviceByIP(ip string) (DeviceInfo, bool, error) {
+	return s.findDefaultDevice(func(device DeviceInfo) bool {
+		return ip != "" && device.CurrentIP == ip
+	})
+}
+
+func (s *SDK) FindDeviceByUserDefinedName(name string) (DeviceInfo, bool, error) {
+	return s.findDefaultDevice(func(device DeviceInfo) bool {
+		return name != "" && device.UserDefinedName == name
+	})
+}
+
+func (s *SDK) OpenDeviceBySerial(serial string, accessMode uint32) (*Camera, error) {
+	device, ok, err := s.FindDeviceBySerial(serial)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, fmt.Errorf("%w: serial %q", ErrDeviceNotFound, serial)
+	}
+	return s.OpenDevice(device, accessMode)
+}
+
+func (s *SDK) OpenDeviceByIP(ip string, accessMode uint32) (*Camera, error) {
+	device, ok, err := s.FindDeviceByIP(ip)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, fmt.Errorf("%w: ip %q", ErrDeviceNotFound, ip)
+	}
+	return s.OpenDevice(device, accessMode)
+}
+
+func (s *SDK) OpenDeviceByUserDefinedName(name string, accessMode uint32) (*Camera, error) {
+	device, ok, err := s.FindDeviceByUserDefinedName(name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, fmt.Errorf("%w: user-defined name %q", ErrDeviceNotFound, name)
+	}
+	return s.OpenDevice(device, accessMode)
+}
+
+func (s *SDK) findDefaultDevice(match func(DeviceInfo) bool) (DeviceInfo, bool, error) {
+	devices, err := s.EnumerateDefaultDevices()
+	if err != nil {
+		return DeviceInfo{}, false, err
+	}
+	for _, device := range devices {
+		if match(device) {
+			return device, true, nil
+		}
+	}
+	return DeviceInfo{}, false, nil
 }

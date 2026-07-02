@@ -1,6 +1,6 @@
 //go:build windows && amd64
 
-package mvsdk
+package mvs
 
 import (
 	"fmt"
@@ -23,16 +23,16 @@ func (v Version) String() string {
 }
 
 type DeviceInfo struct {
-	Index               int
-	TransportLayer      uint32
-	TransportLayerName  string
-	ModelName           string
-	SerialNumber        string
-	UserDefinedName     string
-	ManufacturerName    string
-	CurrentIP           string
-	InterfaceID         string
-	DeviceID            string
+	Index              int
+	TransportLayer     uint32
+	TransportLayerName string
+	ModelName          string
+	SerialNumber       string
+	UserDefinedName    string
+	ManufacturerName   string
+	CurrentIP          string
+	InterfaceID        string
+	DeviceID           string
 
 	raw mvCCDeviceInfo
 }
@@ -69,6 +69,11 @@ type EnumValue struct {
 	Supported []uint32
 }
 
+type StringValue struct {
+	Current   string
+	MaxLength int64
+}
+
 type SDK struct {
 	driver      *driver
 	initialized bool
@@ -76,10 +81,12 @@ type SDK struct {
 }
 
 type Camera struct {
-	sdk      *SDK
-	handle   uintptr
-	info     DeviceInfo
-	open     bool
-	grabbing bool
-	mu       sync.Mutex
+	sdk         *SDK
+	handle      uintptr
+	info        DeviceInfo
+	open        bool
+	grabbing    bool
+	callbackPtr uintptr
+	callback    FrameCallback
+	mu          sync.Mutex
 }
