@@ -2,7 +2,7 @@
 
 `go-mvs` is a Go wrapper around Hikrobot MVS `MvCameraControl.dll`.
 
-Current release status: `v0.1.0-alpha.1`. The package is suitable for early integration and internal validation on Windows amd64. It is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
+Current release status: `v0.1.0-alpha.2`. The package is suitable for early integration and internal validation on Windows amd64. It is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
 
 ## Scope
 
@@ -15,8 +15,15 @@ Current release status: `v0.1.0-alpha.1`. The package is suitable for early inte
 - Enum symbolic lookup and enum-by-string writes
 - GigE optimal packet size configuration, stream buffer node count, grab strategy, output queue size, and image buffer clearing
 - Feature file save/load through Hikrobot SDK
+- Interface/frame-grabber enumeration and GenTL CTI enumeration/open helpers through the `MV_CC_*` interface APIs exposed by `MvCameraControl.h`
+- Camera event callback registration and event notification toggles
+- Camera file access through SDK file read/write APIs
+- CameraLink local serial-port enumeration, CameraLink baudrate helpers, and camera serial-port read/write APIs
+- SDK recording bindings with Go-side parameter validation
 - SDK image export through `MV_CC_SaveImageToFileEx`
 - SDK pixel conversion through `MV_CC_ConvertPixelTypeEx`
+- SDK rotate, flip, Bayer interpolation/Gamma/CCM, contrast, purple-fringing, ISP config/process, high-bandwidth decode, and image reconstruction bindings
+- MultiPart/SubImage frame metadata extraction, including 3D image part metadata
 - Pixel helpers for Mono8, RGB8, BGR8, RGBA8, BGRA8, Bayer8 preview conversion, and MVS pixel type metadata
 
 ## Requirements
@@ -39,7 +46,7 @@ The runtime DLL is resolved in this order:
 ## Install
 
 ```powershell
-go get github.com/oldweipro/go-mvs@v0.1.0-alpha.1
+go get github.com/oldweipro/go-mvs@v0.1.0-alpha.2
 ```
 
 For local development:
@@ -165,6 +172,20 @@ Full hardware integration check, including callback acquisition:
 go test -tags integration ./... -count=1 -v
 ```
 
+Optional modules that may depend on device capability or write state are guarded by environment variables:
+
+```powershell
+$env:MVS_TEST_RECORD = "1"                 # records a temp AVI from a captured frame
+$env:MVS_TEST_EVENT_NAME = "ExposureEnd"   # enables/disables a named event
+$env:MVS_TEST_READ_DEVICE_FILE = "UserSet1"
+$env:MVS_TEST_WRITE_DEVICE_FILE = "UserFile"
+$env:MVS_TEST_WRITE_DEVICE_FILE_DATA = "payload"
+$env:MVS_TEST_SERIAL = "1"
+$env:MVS_TEST_SERIAL_WRITE = "payload"
+$env:MVS_TEST_GENTL_CTI = "C:\path\to\producer.cti"
+go test -tags integration ./... -run TestCameraIntegration -count=1 -v
+```
+
 Feature load is intentionally opt-in because it writes parameters back to the camera:
 
 ```powershell
@@ -177,17 +198,27 @@ go test -tags integration ./... -run TestCameraIntegration -count=1 -v
 - `raw_windows.go`: DLL loading and low-level procedure calls
 - `raw_types_windows.go`: raw Hikrobot SDK struct layouts and size checks
 - `device_windows.go`: device transport names and raw device info conversion
+- `interface_windows.go`: interface/frame-grabber and GenTL enumeration/open helpers
 - `sdk_windows.go`: SDK lifecycle, device enumeration, and device open helpers
 - `camera_windows.go`: camera lifecycle, frame acquisition, stream options, node APIs, SDK conversion, and SDK image export
+- `event_windows.go`: event callback registration and event notification helpers
+- `file_windows.go`: camera file access helpers
+- `record_windows.go`: SDK recording helpers
+- `serial_windows.go`: CameraLink and camera serial-port helpers
+- `image_process_windows.go`: SDK image-processing, high-bandwidth decode, and reconstruction helpers
 - `pixel.go`: pixel type utilities and preview image conversion helpers
 - `cmd/mvs-list-devices`: enumerate connected cameras
 - `cmd/mvs-grab-frame`: grab one frame and save raw bytes plus optional SDK image export
+- `docs/recording-validation.md`: local recording validation notes against official Hikrobot samples
 - `docs/release-checklist.md`: release validation checklist
 
 ## Limitations
 
 - Windows amd64 only.
 - `MV_CC_RegisterImageCallBackEx` callback mode is supported, but callback mode is mutually exclusive with active pull APIs on the same camera handle.
-- Interface/frame-grabber management, recording, event callbacks, camera file access, serial port APIs, advanced ISP tuning, rotation/flip, and point-cloud helpers are not wrapped yet.
+- FrameGrabber support is limited to the interface and GenTL functions present in this machine's `MvCameraControl.h`; no separate `MV_FG_*` API is wrapped because the installed SDK headers do not expose it.
+- Recording is bound and parameter-validated, but `MV_CC_StartRecord` returned `MV_E_PARAMETER` on the local `MV-CS200-10GM` validation camera. The same result was reproduced through Hikrobot's official Python ctypes wrapper across ROI, pixel format, frame-rate, and bitrate probes; see `docs/recording-validation.md`.
+- File access, event notification by name, serial-port read/write, GenTL CTI loading, ISP config files, high-bandwidth decode, and destructive device writes are opt-in integration checks because they depend on device capability or external files.
+- Point-cloud support currently exposes MVS 3D pixel constants and MultiPart/SubImage metadata. Higher-level export formats such as PCD/PLY are not included yet.
 - Pure Go image conversion is a preview helper only; production image export should use `SaveFrameToFile` or `ConvertFrame`.
 - API compatibility is not guaranteed until v1.0.0.

@@ -3,20 +3,31 @@ package mvs
 const (
 	MVOK = 0x00000000
 
-	ErrHandle       = 0x80000000
-	ErrSupport      = 0x80000001
-	ErrBufferOver   = 0x80000002
-	ErrCallOrder    = 0x80000003
-	ErrParameter    = 0x80000004
-	ErrResource     = 0x80000006
-	ErrNoData       = 0x80000007
-	ErrPrecondition = 0x80000008
-	ErrVersion      = 0x80000009
-	ErrNoEnoughBuf  = 0x8000000A
-	ErrAbnormalImg  = 0x8000000B
-	ErrLoadLibrary  = 0x8000000C
-	ErrNoOutBuf     = 0x8000000D
-	ErrBusy         = 0x80000204
+	ErrHandle        = 0x80000000
+	ErrSupport       = 0x80000001
+	ErrBufferOver    = 0x80000002
+	ErrCallOrder     = 0x80000003
+	ErrParameter     = 0x80000004
+	ErrResource      = 0x80000006
+	ErrNoData        = 0x80000007
+	ErrPrecondition  = 0x80000008
+	ErrVersion       = 0x80000009
+	ErrNoEnoughBuf   = 0x8000000A
+	ErrAbnormalImg   = 0x8000000B
+	ErrLoadLibrary   = 0x8000000C
+	ErrNoOutBuf      = 0x8000000D
+	ErrGCGeneric     = 0x80000100
+	ErrGCArgument    = 0x80000101
+	ErrGCRange       = 0x80000102
+	ErrGCProperty    = 0x80000103
+	ErrGCRuntime     = 0x80000104
+	ErrGCLogical     = 0x80000105
+	ErrGCAccess      = 0x80000106
+	ErrGCTimeout     = 0x80000107
+	ErrGCDynamicCast = 0x80000108
+	ErrGCUnknown     = 0x800001FF
+	ErrAccessDenied  = 0x80000203
+	ErrBusy          = 0x80000204
 )
 
 const (
@@ -33,6 +44,16 @@ const (
 	DeviceTypeGentlXOF          uint32 = 0x00000200
 	DeviceTypeGentlVirtual      uint32 = 0x00000800
 	DefaultDeviceTransportLayer uint32 = DeviceTypeGigE | DeviceTypeUSB | DeviceTypeGentlCameraLink | DeviceTypeGentlCXP | DeviceTypeGentlXOF
+)
+
+const (
+	InterfaceTypeGigE        uint32 = 0x00000001
+	InterfaceTypeCameraLink  uint32 = 0x00000004
+	InterfaceTypeCXP         uint32 = 0x00000008
+	InterfaceTypeXOF         uint32 = 0x00000010
+	InterfaceTypeVirtual     uint32 = 0x00000020
+	InterfaceTypeLightCtrl   uint32 = 0x00000040
+	DefaultInterfaceTypeMask uint32 = InterfaceTypeGigE | InterfaceTypeCameraLink | InterfaceTypeCXP | InterfaceTypeXOF | InterfaceTypeVirtual | InterfaceTypeLightCtrl
 )
 
 const (
@@ -61,6 +82,11 @@ const (
 )
 
 const (
+	RecordFormatUndefined RecordFormat = 0
+	RecordFormatAVI       RecordFormat = 1
+)
+
+const (
 	InterpolationFast        InterpolationMethod = 0
 	InterpolationBalanced    InterpolationMethod = 1
 	InterpolationOptimal     InterpolationMethod = 2
@@ -75,6 +101,64 @@ const (
 )
 
 const (
+	RotationAngle90  RotationAngle = 1
+	RotationAngle180 RotationAngle = 2
+	RotationAngle270 RotationAngle = 3
+)
+
+const (
+	FlipVertical   FlipType = 1
+	FlipHorizontal FlipType = 2
+)
+
+const (
+	GammaTypeNone       GammaType = 0
+	GammaTypeValue      GammaType = 1
+	GammaTypeUserCurve  GammaType = 2
+	GammaTypeLRGBToSRGB GammaType = 3
+	GammaTypeSRGBToLRGB GammaType = 4
+)
+
+const (
+	FrameExtraNoInfo     uint32 = 0x0000
+	FrameExtraSubImages  uint32 = 0x0001
+	FrameExtraMultiParts uint32 = 0x0002
+)
+
+const (
+	MultiPartData2DImage1Planar MultiPartDataType = 0x0001
+	MultiPartData2DImage2Planar MultiPartDataType = 0x0002
+	MultiPartData2DImage3Planar MultiPartDataType = 0x0003
+	MultiPartData2DImage4Planar MultiPartDataType = 0x0004
+	MultiPartData3DImage1Planar MultiPartDataType = 0x0005
+	MultiPartData3DImage2Planar MultiPartDataType = 0x0006
+	MultiPartData3DImage3Planar MultiPartDataType = 0x0007
+	MultiPartData3DImage4Planar MultiPartDataType = 0x0008
+	MultiPartDataConfidenceMap  MultiPartDataType = 0x0009
+	MultiPartDataChunkData      MultiPartDataType = 0x000A
+	MultiPartDataJPEGImage      MultiPartDataType = 0x000B
+	MultiPartDataJPEG2000Image  MultiPartDataType = 0x000C
+)
+
+const (
+	ImageReconstructSplitByLine ImageReconstructMethod = 1
+)
+
+const (
+	CameraLinkBaudrate9600    uint32 = 0x00000001
+	CameraLinkBaudrate19200   uint32 = 0x00000002
+	CameraLinkBaudrate38400   uint32 = 0x00000004
+	CameraLinkBaudrate57600   uint32 = 0x00000008
+	CameraLinkBaudrate115200  uint32 = 0x00000010
+	CameraLinkBaudrate230400  uint32 = 0x00000020
+	CameraLinkBaudrate460800  uint32 = 0x00000040
+	CameraLinkBaudrate921600  uint32 = 0x00000080
+	CameraLinkBaudrateAutoMax uint32 = 0x40000000
+)
+
+const SerialPortMaxWriteSize = 512
+
+const (
 	NodeTriggerMode          = "TriggerMode"
 	NodeTriggerSource        = "TriggerSource"
 	NodeTriggerSoftware      = "TriggerSoftware"
@@ -84,6 +168,8 @@ const (
 	NodeHeight               = "Height"
 	NodeGevSCPSPacketSize    = "GevSCPSPacketSize"
 	NodeAcquisitionFrameRate = "AcquisitionFrameRate"
+	NodeResultingFrameRate   = "ResultingFrameRate"
+	NodeImageCompressionMode = "ImageCompressionMode"
 	NodeExposureTime         = "ExposureTime"
 	NodeGain                 = "Gain"
 	NodeDeviceUserID         = "DeviceUserID"

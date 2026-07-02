@@ -48,6 +48,9 @@ type Frame struct {
 	ExposureTime    float32
 	Gain            float32
 	LostPacketCount uint32
+	ExtraType       uint32
+	SubImageNum     uint32
+	Parts           []FramePart
 	Data            []byte
 }
 
@@ -81,12 +84,24 @@ type SDK struct {
 }
 
 type Camera struct {
-	sdk         *SDK
-	handle      uintptr
-	info        DeviceInfo
-	open        bool
-	grabbing    bool
-	callbackPtr uintptr
-	callback    FrameCallback
-	mu          sync.Mutex
+	sdk            *SDK
+	handle         uintptr
+	info           DeviceInfo
+	open           bool
+	grabbing       bool
+	recording      bool
+	serialOpen     bool
+	callbackPtr    uintptr
+	callback       FrameCallback
+	eventCallbacks []EventCallback
+	eventPtrs      []uintptr
+	mu             sync.Mutex
+}
+
+type Interface struct {
+	sdk    *SDK
+	handle uintptr
+	info   InterfaceInfo
+	open   bool
+	mu     sync.Mutex
 }

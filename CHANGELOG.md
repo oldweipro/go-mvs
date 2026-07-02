@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.1.0-alpha.2 - 2026-07-02
+
+### Added
+
+- Interface/frame-grabber enumeration and open helpers using the `MV_CC_EnumInterfaces`, `MV_CC_CreateInterface*`, `MV_CC_OpenInterface`, and `MV_CC_EnumDevicesByInterface` APIs available from `MvCameraControl.h`.
+- GenTL CTI enumeration and open helpers using `MV_CC_EnumInterfacesByGenTL`, `MV_CC_EnumDevicesByGenTL`, and `MV_CC_CreateHandleByGenTL`.
+- Event callback registration and event notification helpers.
+- Camera file access read/write helpers for file path and in-memory buffer modes.
+- CameraLink serial-port enumeration, CameraLink baudrate helpers, and camera serial-port open/read/write/clear/close helpers.
+- SDK recording wrappers with Go-side validation for path, size, frame rate, bitrate, and format.
+- SDK image processing helpers for rotate, flip, Bayer interpolation/Gamma/CCM, contrast, purple-fringing, ISP process, high-bandwidth decode, and image reconstruction.
+- Frame MultiPart/SubImage extraction into `Frame.Parts`, including 3D image part metadata.
+- Unit tests for record option validation and MultiPart/SubImage parsing.
+- Integration coverage for interface enumeration, event callback registration, rotate/flip, contrast, reconstruction, and gated record/file/serial/GenTL checks.
+
+### Validation Notes
+
+- Default hardware integration passed with MVS SDK `4.8.0.3` and camera `MV-CS200-10GM`.
+- No frame-grabber/interface entries were present on the local validation machine.
+- Recording is bound but did not pass positive hardware validation on the local camera: `MV_CC_StartRecord` returned `MV_E_PARAMETER`. The same result was reproduced with Hikrobot's official Python ctypes wrapper for full frame, reduced ROI, multiple pixel types, and frame-rate/bitrate combinations.
+- File access, serial write/read, named event notification, GenTL CTI loading, ISP config processing, and high-bandwidth decode remain opt-in validation paths because they require device-specific configuration or external inputs.
+
 ## v0.1.0-alpha.1 - 2026-07-02
 
 Initial alpha release for Hikrobot MVS acquisition on Windows amd64.
@@ -30,6 +52,6 @@ Initial alpha release for Hikrobot MVS acquisition on Windows amd64.
 
 - Windows amd64 only.
 - Callback acquisition and active pull APIs are mutually exclusive on the same camera handle.
-- Interface/frame-grabber management, recording, event callbacks, camera file access, serial port APIs, advanced ISP tuning, rotation/flip, and point-cloud helpers are not wrapped yet.
+- Interface/frame-grabber management, recording, event callbacks, camera file access, serial port APIs, advanced ISP tuning, rotation/flip, and point-cloud helpers were outside the initial alpha scope.
 - Pure Go image conversion is intended for preview only; SDK image export/conversion should be used for production export paths.
 - The public API is still allowed to change before v1.0.0.

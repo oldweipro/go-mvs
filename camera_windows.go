@@ -3,6 +3,7 @@
 package mvs
 
 import (
+	"encoding/binary"
 	"fmt"
 	"runtime"
 	"syscall"
@@ -149,6 +150,20 @@ func (c *Camera) Close() error {
 			firstErr = err
 		}
 		c.grabbing = false
+	}
+
+	if c.recording {
+		if err := c.sdk.driver.stopRecord(c.handle); err != nil && firstErr == nil {
+			firstErr = err
+		}
+		c.recording = false
+	}
+
+	if c.serialOpen {
+		if err := c.sdk.driver.serialPortClose(c.handle); err != nil && firstErr == nil {
+			firstErr = err
+		}
+		c.serialOpen = false
 	}
 
 	if c.handle != 0 {
@@ -719,6 +734,9 @@ func validateFrame(frame *Frame) error {
 	if len(frame.Data) == 0 {
 		return fmt.Errorf("%w: frame data is empty", ErrInvalidFrameData)
 	}
+	if uint64(len(frame.Data)) > maxUint32Value {
+		return fmt.Errorf("%w: frame data is larger than UINT_MAX", ErrInvalidFrameData)
+	}
 	return nil
 }
 
@@ -769,6 +787,7 @@ func frameFromInfo(info *mvFrameOutInfoEx, data []byte) (*Frame, error) {
 	if info.FrameLenEx > 0 {
 		frameLength = info.FrameLenEx
 	}
+	parts := framePartsFromInfo(info)
 
 	return &Frame{
 		Width:           width,
@@ -781,6 +800,94 @@ func frameFromInfo(info *mvFrameOutInfoEx, data []byte) (*Frame, error) {
 		ExposureTime:    info.ExposureTime,
 		Gain:            info.Gain,
 		LostPacketCount: info.LostPacket,
+		ExtraType:       info.ExtraType,
+		SubImageNum:     info.SubImageNum,
+		Parts:           parts,
 		Data:            data[:length],
 	}, nil
+}
+
+func framePartsFromInfo(info *mvFrameOutInfoEx) []FramePart {
+	if info == nil || info.SubImageNum == 0 || info.SubImageList == nil {
+		return nil
+	}
+
+	count := int(info.SubImageNum)
+	if count <= 0 {
+		return nil
+	}
+	if count > mvMaxSplitNum && info.ExtraType != FrameExtraMultiParts {
+		count = mvMaxSplitNum
+	}
+
+	switch info.ExtraType {
+	case FrameExtraSubImages:
+		return frameSubImagesFromInfo(info.SubImageList, count)
+	case FrameExtraMultiParts:
+		return frameMultiPartsFromInfo(info.SubImageList, count)
+	default:
+		return nil
+	}
+}
+
+func frameSubImagesFromInfo(ptr unsafe.Pointer, count int) []FramePart {
+	rawImages := unsafe.Slice((*mvCCImage)(ptr), count)
+	parts := make([]FramePart, 0, count)
+	for _, raw := range rawImages {
+		length, ok := uint64ToInt(raw.ImageLen)
+		if !ok || raw.ImageBuf == nil || length == 0 {
+			continue
+		}
+		data := make([]byte, length)
+		copy(data, unsafe.Slice(raw.ImageBuf, length))
+		parts = append(parts, FramePart{
+			DataFormat: uint32(raw.PixelType),
+			Width:      raw.Width,
+			Height:     raw.Height,
+			PixelType:  raw.PixelType,
+			Length:     raw.ImageLen,
+			Data:       data,
+		})
+	}
+	return parts
+}
+
+func frameMultiPartsFromInfo(ptr unsafe.Pointer, count int) []FramePart {
+	rawParts := unsafe.Slice((*mvGigeMultiPartInfo)(ptr), count)
+	parts := make([]FramePart, 0, count)
+	for _, raw := range rawParts {
+		length, ok := uint64ToInt(raw.Length)
+		if !ok || raw.PartAddr == nil || length == 0 {
+			continue
+		}
+		data := make([]byte, length)
+		copy(data, unsafe.Slice(raw.PartAddr, length))
+
+		part := FramePart{
+			DataType:         MultiPartDataType(raw.DataType),
+			DataFormat:       raw.DataFormat,
+			PixelType:        raw.DataFormat,
+			SourceID:         raw.SourceID,
+			RegionID:         raw.RegionID,
+			DataPurposeID:    raw.DataPurposeID,
+			Zones:            raw.Zones,
+			Length:           raw.Length,
+			DataTypeSpecific: raw.DataTypeSpecific.Data,
+			Data:             data,
+		}
+		if raw.DataType <= uint32(MultiPartDataConfidenceMap) {
+			part.Width = binary.LittleEndian.Uint32(raw.DataTypeSpecific.Data[0:4])
+			part.Height = binary.LittleEndian.Uint32(raw.DataTypeSpecific.Data[4:8])
+		}
+		parts = append(parts, part)
+	}
+	return parts
+}
+
+func uint64ToInt(value uint64) (int, bool) {
+	maxInt := uint64(int(^uint(0) >> 1))
+	if value > maxInt {
+		return 0, false
+	}
+	return int(value), true
 }

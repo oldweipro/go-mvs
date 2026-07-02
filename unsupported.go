@@ -29,6 +29,7 @@ type EnumValue struct{}
 type StringValue struct{}
 type SDK struct{}
 type Camera struct{}
+type Interface struct{}
 
 func New(Config) (*SDK, error) {
 	return nil, ErrUnsupportedPlatform
@@ -96,6 +97,54 @@ func (s *SDK) OpenDeviceByIP(string, uint32) (*Camera, error) {
 
 func (s *SDK) OpenDeviceByUserDefinedName(string, uint32) (*Camera, error) {
 	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) EnumerateInterfaces(uint32) ([]InterfaceInfo, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) OpenInterface(InterfaceInfo) (*Interface, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) OpenInterfaceByID(string) (*Interface, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) EnumerateGenTLInterfaces(string) ([]GenTLInterfaceInfo, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) UnloadGenTLLibrary(string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (s *SDK) EnumerateGenTLDevices(GenTLInterfaceInfo) ([]GenTLDeviceInfo, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) OpenGenTLDevice(GenTLDeviceInfo, uint32) (*Camera, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) GetCameraLinkSerialPortList() ([]CameraLinkSerialPort, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (s *SDK) SetCameraLinkEnumSerialPorts([]CameraLinkSerialPort) error {
+	return ErrUnsupportedPlatform
+}
+
+func (i *Interface) Info() InterfaceInfo {
+	return InterfaceInfo{}
+}
+
+func (i *Interface) EnumerateDevices() ([]DeviceInfo, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (i *Interface) Close() error {
+	return nil
 }
 
 func (c *Camera) Info() DeviceInfo {
@@ -240,6 +289,170 @@ func (c *Camera) ConvertFrame(*Frame, PixelConvertOptions) (*Frame, error) {
 
 func (c *Camera) RegisterFrameCallback(FrameCallback) error {
 	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) RegisterAllEventCallback(EventCallback) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) RegisterEventCallback(string, EventCallback) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) EventNotificationOn(string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) EventNotificationOff(string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) ReadDeviceFileToFile(string, string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) WriteDeviceFileFromFile(string, string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) ReadDeviceFile(string, int) ([]byte, FileAccessProgress, error) {
+	return nil, FileAccessProgress{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) WriteDeviceFile(string, []byte) (FileAccessProgress, error) {
+	return FileAccessProgress{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) GetFileAccessProgress() (FileAccessProgress, error) {
+	return FileAccessProgress{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) StartRecord(RecordOptions) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) InputRecordFrame(*Frame) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) InputRecordData([]byte) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) StopRecord() error {
+	return nil
+}
+
+func (c *Camera) SetCameraLinkBaudrate(uint32) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) GetCameraLinkBaudrate() (uint32, error) {
+	return 0, ErrUnsupportedPlatform
+}
+
+func (c *Camera) GetSupportedCameraLinkBaudrates() (uint32, error) {
+	return 0, ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetCameraLinkGenCPTimeout(time.Duration) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) OpenSerialPort() error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) WriteSerialPort([]byte) (int, error) {
+	return 0, ErrUnsupportedPlatform
+}
+
+func (c *Camera) ReadSerialPort(int, time.Duration) ([]byte, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) ReadSerialPortInto([]byte, time.Duration) (int, error) {
+	return 0, ErrUnsupportedPlatform
+}
+
+func (c *Camera) ClearSerialPort() error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) CloseSerialPort() error {
+	return nil
+}
+
+func (c *Camera) RotateFrame(*Frame, RotationAngle) (*Frame, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) FlipFrame(*Frame, FlipType) (*Frame, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerCvtQuality(InterpolationMethod) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerFilterEnable(bool) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerGammaValue(float32) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetGammaValue(uint32, float32) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerGammaParam(GammaOptions) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerCCMParam(CCMOptions) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetBayerCCMParamEx(CCMOptionsEx) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) AdjustContrast(*Frame, ContrastOptions) (*Frame, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) CorrectPurpleFringing(*Frame, PurpleFringingOptions) (*Frame, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) SetISPConfig(string) error {
+	return ErrUnsupportedPlatform
+}
+
+func (c *Camera) ISPProcess(*Frame, PixelConvertOptions) (*Frame, error) {
+	return nil, ErrUnsupportedPlatform
+}
+
+func (c *Camera) DecodeHighBandwidthData([]byte, HBDecodeOptions) (*Frame, FrameSpecInfo, error) {
+	return nil, FrameSpecInfo{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) HBDecode([]byte, HBDecodeOptions) (*Frame, FrameSpecInfo, error) {
+	return nil, FrameSpecInfo{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) DecodeHighBandwidthFrame(*Frame, HBDecodeOptions) (*Frame, FrameSpecInfo, error) {
+	return nil, FrameSpecInfo{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) HBDecodeFrame(*Frame, HBDecodeOptions) (*Frame, FrameSpecInfo, error) {
+	return nil, FrameSpecInfo{}, ErrUnsupportedPlatform
+}
+
+func (c *Camera) ReconstructImage(*Frame, ReconstructImageOptions) ([]*Frame, error) {
+	return nil, ErrUnsupportedPlatform
 }
 
 func (f *Frame) Image() (image.Image, error) {
