@@ -1,12 +1,18 @@
 # Changelog
 
-## Unreleased
+## v0.1.0-beta.1 - 2026-07-03
 
 ### Changed
 
 - Split release documentation into a stable core target and experimental modules.
 - Added `docs/roadmap.md` to define the `v0.1.0-beta.1`, `v0.1.0`, later pre-v1, and v1 release gates.
 - Added `MVS_TEST_REQUIRE_CAMERA=1` so stable core release candidates fail integration checks instead of skipping when no camera is found or the selected camera is not accessible in exclusive mode.
+
+### Validation Notes
+
+- Stable core hardware validation passed with MVS SDK `4.8.0.3`, runtime DLL `C:\Program Files (x86)\Common Files\MVS\Runtime\Win64_x64\MvCameraControl.dll`, and camera `MV-CS200-10GM` serial `DB0612579`.
+- Release CLI validation saved a non-empty raw frame and SDK-exported JPEG from `5472 x 3648` `Mono8` input.
+- Experimental modules remain outside the stable promise until their module-specific hardware checks pass on suitable equipment.
 
 ## v0.1.0-alpha.2 - 2026-07-02
 
