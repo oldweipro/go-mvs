@@ -1,10 +1,18 @@
 # Release Checklist
 
-This checklist is for `v0.1.0-alpha.2` and later pre-v1 releases.
+This checklist is for pre-v1 releases. It separates the stable core release gate from experimental module validation.
+
+## Version Decision
+
+- Tag an alpha release when the API or validation boundary is still moving.
+- Tag `v0.1.0-beta.1` when the common camera-management and acquisition API is ready for application integration.
+- Tag `v0.1.0` only after the stable core hardware checks pass on a connected Hikrobot camera without "no devices found" skips.
+- Keep recording, events, file access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers outside the stable promise until their optional checks pass on suitable hardware.
 
 ## Required Local Checks
 
 ```powershell
+git status --short
 go test ./...
 go vet ./...
 ```
@@ -15,7 +23,9 @@ Use a machine with Hikrobot MVS Runtime Package installed and at least one conne
 
 ```powershell
 go run ./cmd/mvs-list-devices
+$env:MVS_TEST_REQUIRE_CAMERA = "1"
 go test -tags integration ./... -count=1 -v
+Remove-Item Env:\MVS_TEST_REQUIRE_CAMERA
 go run ./cmd/mvs-grab-frame -serial DB0612579 -out frame.release-check.raw -jpeg frame.release-check.jpg
 ```
 
@@ -24,6 +34,7 @@ Expected result:
 - SDK version and DLL path are printed by `mvs-list-devices`.
 - At least one camera is listed.
 - Integration tests pass for enumeration, open, node access, feature save, pull acquisition, SDK conversion, SDK image export, callback acquisition, event callback registration, safe image-processing helpers, and image reconstruction where supported by the SDK/device.
+- Stable core release candidates must not skip hardware integration because no camera was found or the selected camera is not accessible in exclusive mode.
 - `frame.release-check.raw` and `frame.release-check.jpg` are created and non-empty.
 
 Remove release-check output files after validation:
@@ -33,6 +44,8 @@ Remove-Item frame.release-check.raw, frame.release-check.jpg -ErrorAction Silent
 ```
 
 ## Optional Hardware Checks
+
+Optional checks are useful for roadmap modules, but they do not promote those modules to stable by themselves. Record the SDK version, DLL path, camera model, serial number, node settings, and result when any optional check is used as release evidence.
 
 Feature load writes parameters back to the camera. Run it only when that is acceptable for the connected device.
 
@@ -79,7 +92,19 @@ Remove-Item Env:\MVS_TEST_READ_DEVICE_FILE, Env:\MVS_TEST_WRITE_DEVICE_FILE, Env
 
 ## Release Scope Boundary
 
-The release can be tagged as an alpha when the checks above pass and validation notes are accurate. Do not describe it as a complete MVS SDK binding.
+Do not describe any pre-v1 release as a complete MVS SDK binding.
+
+Stable core boundary:
+
+- SDK lifecycle, DLL resolution, SDK version reporting
+- Device enumeration, accessibility checks, and open helpers
+- Camera open/close, connection check, start/stop grabbing
+- Pull, caller-buffer, and callback acquisition
+- Common GenICam node access and enum symbolic helpers
+- Trigger mode, GigE packet size, and common stream-buffer helpers
+- Feature file save and opt-in feature file load
+- SDK image export and SDK pixel conversion
+- Pixel metadata and preview conversion helpers
 
 Current boundaries:
 
@@ -93,6 +118,7 @@ Current boundaries:
 
 ```powershell
 git status --short
-git tag v0.1.0-alpha.2
-git push origin v0.1.0-alpha.2
+$version = "v0.1.0-beta.1"
+git tag $version
+git push origin $version
 ```

@@ -2,9 +2,11 @@
 
 `go-mvs` is a Go wrapper around Hikrobot MVS `MvCameraControl.dll`.
 
-Current release status: `v0.1.0-alpha.2`. The package is suitable for early integration and internal validation on Windows amd64. It is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
+Current tagged release: `v0.1.0-alpha.2`. The package is suitable for early integration and internal validation on Windows amd64. The next release target is a focused `v0.1.0-beta.1` that stabilizes the common camera-management and acquisition path before a formal `v0.1.0` release.
 
-## Scope
+This package is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
+
+## Stable Core Target
 
 - Windows amd64
 - No cgo dependency
@@ -14,17 +16,22 @@ Current release status: `v0.1.0-alpha.2`. The package is suitable for early inte
 - Common GenICam node access: int, float, enum, bool, string, command
 - Enum symbolic lookup and enum-by-string writes
 - GigE optimal packet size configuration, stream buffer node count, grab strategy, output queue size, and image buffer clearing
-- Feature file save/load through Hikrobot SDK
+- Feature file save and opt-in feature file load through Hikrobot SDK
+- SDK image export through `MV_CC_SaveImageToFileEx`
+- SDK pixel conversion through `MV_CC_ConvertPixelTypeEx`
+- Pixel helpers for Mono8, RGB8, BGR8, RGBA8, BGRA8, Bayer8 preview conversion, and MVS pixel type metadata
+
+## Experimental Modules
+
 - Interface/frame-grabber enumeration and GenTL CTI enumeration/open helpers through the `MV_CC_*` interface APIs exposed by `MvCameraControl.h`
 - Camera event callback registration and event notification toggles
 - Camera file access through SDK file read/write APIs
 - CameraLink local serial-port enumeration, CameraLink baudrate helpers, and camera serial-port read/write APIs
 - SDK recording bindings with Go-side parameter validation
-- SDK image export through `MV_CC_SaveImageToFileEx`
-- SDK pixel conversion through `MV_CC_ConvertPixelTypeEx`
 - SDK rotate, flip, Bayer interpolation/Gamma/CCM, contrast, purple-fringing, ISP config/process, high-bandwidth decode, and image reconstruction bindings
 - MultiPart/SubImage frame metadata extraction, including 3D image part metadata
-- Pixel helpers for Mono8, RGB8, BGR8, RGBA8, BGRA8, Bayer8 preview conversion, and MVS pixel type metadata
+
+Experimental modules are available for integration work, but they remain outside the stable release promise until they have positive validation on suitable hardware and documented failure behavior.
 
 ## Requirements
 
@@ -166,10 +173,12 @@ Hardware integration check:
 go test -tags integration ./... -run TestCameraIntegration -count=1 -v
 ```
 
-Full hardware integration check, including callback acquisition:
+Release hardware integration check. This must be used before promoting the stable core because it fails when no camera is found or the selected camera is not accessible in exclusive mode:
 
 ```powershell
+$env:MVS_TEST_REQUIRE_CAMERA = "1"
 go test -tags integration ./... -count=1 -v
+Remove-Item Env:\MVS_TEST_REQUIRE_CAMERA
 ```
 
 Optional modules that may depend on device capability or write state are guarded by environment variables:
@@ -193,6 +202,16 @@ $env:MVS_TEST_FEATURE_LOAD = "1"
 go test -tags integration ./... -run TestCameraIntegration -count=1 -v
 ```
 
+## Release Plan
+
+See `docs/roadmap.md` for the release roadmap and `docs/release-checklist.md` for the validation gate.
+
+Summary:
+
+- `v0.1.0-beta.1`: freeze the common camera-management and acquisition API for integration use.
+- `v0.1.0`: promote the stable core after hardware validation succeeds without skipped camera checks on a connected Hikrobot camera.
+- Later minor releases: graduate recording, event, file-access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers when each module has enough positive hardware validation.
+
 ## Project Layout
 
 - `raw_windows.go`: DLL loading and low-level procedure calls
@@ -210,6 +229,7 @@ go test -tags integration ./... -run TestCameraIntegration -count=1 -v
 - `cmd/mvs-list-devices`: enumerate connected cameras
 - `cmd/mvs-grab-frame`: grab one frame and save raw bytes plus optional SDK image export
 - `docs/recording-validation.md`: local recording validation notes against official Hikrobot samples
+- `docs/roadmap.md`: stability boundaries and release plan
 - `docs/release-checklist.md`: release validation checklist
 
 ## Limitations

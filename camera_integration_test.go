@@ -25,7 +25,7 @@ func TestCameraIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(devices) == 0 {
-		t.Skip("no devices found")
+		skipOrFailNoDevices(t)
 	}
 
 	assertInterfaceIntegration(t, sdk)
@@ -37,7 +37,7 @@ func TestCameraIntegration(t *testing.T) {
 		t.Fatalf("device serial number is empty: %+v", device)
 	}
 	if !sdk.IsDeviceAccessible(device, AccessExclusive) {
-		t.Skipf("device %s is not accessible in exclusive mode", device.SerialNumber)
+		skipOrFailDeviceInaccessible(t, device)
 	}
 
 	camera, err := sdk.OpenDeviceBySerial(device.SerialNumber, AccessExclusive)
@@ -447,12 +447,12 @@ func TestCameraCallbackIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(devices) == 0 {
-		t.Skip("no devices found")
+		skipOrFailNoDevices(t)
 	}
 
 	device := devices[0]
 	if !sdk.IsDeviceAccessible(device, AccessExclusive) {
-		t.Skipf("device %s is not accessible in exclusive mode", device.SerialNumber)
+		skipOrFailDeviceInaccessible(t, device)
 	}
 
 	camera, err := sdk.OpenDeviceBySerial(device.SerialNumber, AccessExclusive)
@@ -491,4 +491,23 @@ func TestCameraCallbackIntegration(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("timed out waiting for callback frame")
 	}
+}
+
+func skipOrFailNoDevices(t *testing.T) {
+	t.Helper()
+
+	if os.Getenv("MVS_TEST_REQUIRE_CAMERA") == "1" {
+		t.Fatal("no devices found; MVS_TEST_REQUIRE_CAMERA=1 requires at least one connected Hikrobot camera")
+	}
+	t.Skip("no devices found")
+}
+
+func skipOrFailDeviceInaccessible(t *testing.T, device DeviceInfo) {
+	t.Helper()
+
+	message := "device " + device.SerialNumber + " is not accessible in exclusive mode"
+	if os.Getenv("MVS_TEST_REQUIRE_CAMERA") == "1" {
+		t.Fatal(message)
+	}
+	t.Skip(message)
 }

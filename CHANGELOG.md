@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Split release documentation into a stable core target and experimental modules.
+- Added `docs/roadmap.md` to define the `v0.1.0-beta.1`, `v0.1.0`, later pre-v1, and v1 release gates.
+- Added `MVS_TEST_REQUIRE_CAMERA=1` so stable core release candidates fail integration checks instead of skipping when no camera is found or the selected camera is not accessible in exclusive mode.
+
 ## v0.1.0-alpha.2 - 2026-07-02
 
 ### Added
