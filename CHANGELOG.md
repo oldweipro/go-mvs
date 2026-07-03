@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.0 - 2026-07-03
+
+### Changed
+
+- Promoted the stable core from release candidate to the first `v0.1.0` release.
+- Kept recording, event, file-access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers outside the stable promise.
+
+### Validation Notes
+
+- Stable core hardware validation passed with MVS SDK `4.8.0.3`, runtime DLL `C:\Program Files (x86)\Common Files\MVS\Runtime\Win64_x64\MvCameraControl.dll`, and camera `MV-CS200-10GM` serial `DB0612579`.
+- Release CLI validation saved a non-empty raw frame and SDK-exported JPEG from `5472 x 3648` `Mono8` input.
+- `go-ultronvision` integration validation passed using `github.com/oldweipro/go-mvs v0.1.0-rc.1` through the local `../go-mvs` replace path, including backend tests, forced camera integration tests, frontend production build, and Wails Windows build.
+
 ## v0.1.0-rc.1 - 2026-07-03
 
 ### Changed

@@ -2,7 +2,7 @@
 
 `go-mvs` is a Go wrapper around Hikrobot MVS `MvCameraControl.dll`.
 
-Current tagged release: `v0.1.0-rc.1`. The package is a release candidate for the common camera-management and acquisition path on Windows amd64 before a formal `v0.1.0` release.
+Current tagged release: `v0.1.0`. The package is suitable for the common camera-management and acquisition path on Windows amd64.
 
 This package is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
 
@@ -53,7 +53,7 @@ The runtime DLL is resolved in this order:
 ## Install
 
 ```powershell
-go get github.com/oldweipro/go-mvs@v0.1.0-rc.1
+go get github.com/oldweipro/go-mvs@v0.1.0
 ```
 
 For local development:
@@ -210,7 +210,7 @@ Summary:
 
 - `v0.1.0-beta.1`: freeze the common camera-management and acquisition API for integration use.
 - `v0.1.0-rc.1`: release candidate after stable-core API review, FAQ documentation, and connected-camera release validation.
-- `v0.1.0`: promote the stable core after hardware validation succeeds without skipped camera checks on a connected Hikrobot camera.
+- `v0.1.0`: stable core promoted after SDK hardware validation and `go-ultronvision` integration validation.
 - Later minor releases: graduate recording, event, file-access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers when each module has enough positive hardware validation.
 
 ## Project Layout

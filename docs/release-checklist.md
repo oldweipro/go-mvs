@@ -125,7 +125,7 @@ Current boundaries:
 
 ```powershell
 git status --short
-$version = "v0.1.0-rc.1"
+$version = "v0.1.0"
 git tag $version
 git push origin $version
 ```

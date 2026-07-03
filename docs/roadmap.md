@@ -85,7 +85,9 @@ Non-goals:
 
 Goal: publish the first stable pre-v1 release for the common camera-management and acquisition path.
 
-Required before tagging:
+Release status: completed on 2026-07-03.
+
+Completed gates:
 
 - All `v0.1.0-rc.1` gates pass on the release machine.
 - Public API names for the stable core are reviewed and intentionally accepted.
