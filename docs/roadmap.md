@@ -64,14 +64,32 @@ Non-goals:
 - Do not claim SDK recording as production-ready until `MV_CC_StartRecord` has positive validation.
 - Do not promise FrameGrabber, serial, file access, event, ISP, or point-cloud behavior as stable.
 
+### v0.1.0-rc.1
+
+Goal: publish a release candidate for the stable core after API review and connected-camera validation.
+
+Required before tagging:
+
+- All `v0.1.0-beta.1` gates pass on the release machine.
+- Stable-core public API is reviewed and documented in `docs/api-review.md`.
+- Common runtime and deployment issues are documented in `docs/faq.md`.
+- README, roadmap, release checklist, and changelog describe release-candidate scope accurately.
+- No new stable-core features are added after this point unless they fix a release blocker.
+
+Non-goals:
+
+- Do not promote recording, event, file-access, serial, FrameGrabber/GenTL, advanced ISP, or point-cloud helpers to stable.
+- Do not promise v1 API compatibility.
+
 ### v0.1.0
 
 Goal: publish the first stable pre-v1 release for the common camera-management and acquisition path.
 
 Required before tagging:
 
-- All `v0.1.0-beta.1` gates pass on the release machine.
+- All `v0.1.0-rc.1` gates pass on the release machine.
 - Public API names for the stable core are reviewed and intentionally accepted.
+- `go-ultronvision` integration has no stable-core API blockers.
 - Integration behavior is documented for the validated SDK version, DLL path, camera model, and camera serial number.
 - Known limitations are documented without treating experimental modules as stable.
 

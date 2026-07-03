@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.1.0-rc.1 - 2026-07-03
+
+### Changed
+
+- Promoted the common camera-management and acquisition path from beta to release-candidate status.
+- Added `docs/api-review.md` with the stable-core API review and freeze decision.
+- Added `docs/faq.md` for common DLL, camera discovery, access, trigger, GigE, callback, and recording issues.
+- Updated the release roadmap and checklist for the `v0.1.0-rc.1` gate.
+
+### Validation Notes
+
+- Stable core hardware validation passed with MVS SDK `4.8.0.3`, runtime DLL `C:\Program Files (x86)\Common Files\MVS\Runtime\Win64_x64\MvCameraControl.dll`, and camera `MV-CS200-10GM` serial `DB0612579`.
+- Release CLI validation saved a non-empty raw frame and SDK-exported JPEG from `5472 x 3648` `Mono8` input.
+- No stable-core public API rename was required before the release candidate.
+
 ## v0.1.0-beta.1 - 2026-07-03
 
 ### Changed

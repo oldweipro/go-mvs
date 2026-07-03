@@ -2,7 +2,7 @@
 
 `go-mvs` is a Go wrapper around Hikrobot MVS `MvCameraControl.dll`.
 
-Current tagged release: `v0.1.0-beta.1`. The package is suitable for application integration and hardware validation on Windows amd64. This beta stabilizes the common camera-management and acquisition path before a formal `v0.1.0` release.
+Current tagged release: `v0.1.0-rc.1`. The package is a release candidate for the common camera-management and acquisition path on Windows amd64 before a formal `v0.1.0` release.
 
 This package is not a complete Hikrobot MVS SDK binding and should not be treated as a stable v1 API yet.
 
@@ -53,7 +53,7 @@ The runtime DLL is resolved in this order:
 ## Install
 
 ```powershell
-go get github.com/oldweipro/go-mvs@v0.1.0-beta.1
+go get github.com/oldweipro/go-mvs@v0.1.0-rc.1
 ```
 
 For local development:
@@ -209,6 +209,7 @@ See `docs/roadmap.md` for the release roadmap and `docs/release-checklist.md` fo
 Summary:
 
 - `v0.1.0-beta.1`: freeze the common camera-management and acquisition API for integration use.
+- `v0.1.0-rc.1`: release candidate after stable-core API review, FAQ documentation, and connected-camera release validation.
 - `v0.1.0`: promote the stable core after hardware validation succeeds without skipped camera checks on a connected Hikrobot camera.
 - Later minor releases: graduate recording, event, file-access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers when each module has enough positive hardware validation.
 
@@ -229,6 +230,8 @@ Summary:
 - `cmd/mvs-list-devices`: enumerate connected cameras
 - `cmd/mvs-grab-frame`: grab one frame and save raw bytes plus optional SDK image export
 - `docs/recording-validation.md`: local recording validation notes against official Hikrobot samples
+- `docs/api-review.md`: stable-core public API review for release candidates
+- `docs/faq.md`: common deployment and runtime troubleshooting notes
 - `docs/roadmap.md`: stability boundaries and release plan
 - `docs/release-checklist.md`: release validation checklist
 

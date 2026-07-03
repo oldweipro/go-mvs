@@ -6,6 +6,7 @@ This checklist is for pre-v1 releases. It separates the stable core release gate
 
 - Tag an alpha release when the API or validation boundary is still moving.
 - Tag `v0.1.0-beta.1` when the common camera-management and acquisition API is ready for application integration.
+- Tag `v0.1.0-rc.1` when the stable-core API has been reviewed, release documentation is complete, and connected-camera validation passes.
 - Tag `v0.1.0` only after the stable core hardware checks pass on a connected Hikrobot camera without "no devices found" skips.
 - Keep recording, events, file access, serial, FrameGrabber/GenTL, advanced ISP, and point-cloud helpers outside the stable promise until their optional checks pass on suitable hardware.
 
@@ -16,6 +17,12 @@ git status --short
 go test ./...
 go vet ./...
 ```
+
+Release candidates also require:
+
+- `docs/api-review.md` is current.
+- `docs/faq.md` is current.
+- README, roadmap, changelog, and this checklist agree on the release scope.
 
 ## Required Hardware Checks
 
@@ -118,7 +125,7 @@ Current boundaries:
 
 ```powershell
 git status --short
-$version = "v0.1.0-beta.1"
+$version = "v0.1.0-rc.1"
 git tag $version
 git push origin $version
 ```
